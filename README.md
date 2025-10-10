@@ -65,12 +65,12 @@ A **live coding playground** with **"time travel" debugging**—rewind your code
 
 ## **Roadmap**
 
-<input type="checkbox" checked> Core Editor: Integrate Monaco Editor.<br>
-<input type="checkbox" checked> Snapshot System: Save and load code snapshots.<br>
-<input type="checkbox" checked> IndexedDB Storage: Persist snapshots in the browser.<br>
-<input type="checkbox"> Diff Viewer: Highlight changes between snapshots.<br>
-<input type="checkbox"> Matrix Visualization: Animated transitions between code states.<br>
-<input type="checkbox"> Collaboration: Real-time multiplayer coding (stretch goal).<br>
+[x] Core Editor: Integrate Monaco Editor.<br>
+[x] Snapshot System: Save and load code snapshots.<br>
+[x] IndexedDB Storage: Persist snapshots in the browser.<br>
+[] Diff Viewer: Highlight changes between snapshots.<br>
+[] Matrix Visualization: Animated transitions between code states.<br>
+[] Collaboration: Real-time multiplayer coding (stretch goal).<br>
 
 
 ## **Contributing**

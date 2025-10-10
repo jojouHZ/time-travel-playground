@@ -46,6 +46,21 @@ const App = () => {
     }
   };
 
+  const goBack = () => {
+    if (currentIndex > 0) {
+      loadSnapshot(currentIndex - 1);
+    } else if (currentIndex === 0) {
+      // Return to the "current code" (not a snapshot)
+      setCurrentIndex(-1);
+    }
+  };
+  
+  const goForward = () => {
+    if (currentIndex < history.length - 1) {
+      loadSnapshot(currentIndex + 1);
+    }
+  };
+
   const handleEditorChange = (newValue = "") => {
     setCode(newValue);
   };
@@ -68,6 +83,9 @@ const App = () => {
         loading={<div>Loading Editor...</div>}
       />
       <button onClick={saveSnapshot}>Save Snapshot</button>
+      <button onClick={goBack} disabled={currentIndex < 0}>Back</button>
+      <button onClick={goForward} disabled={currentIndex >= history.length - 1}>Forward</button>
+      
       <span>
         <input
           id="input-value"
@@ -83,7 +101,8 @@ const App = () => {
         >
           Load Snapshot
         </button>
-      </span>
+      </span>     
+      
       <div>
         <h2>History</h2>
         <pre>{JSON.stringify(history, null, 2)}</pre>
