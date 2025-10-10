@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import Editor from "@monaco-editor/react";
 import dbHelper from './utils/indexedDB';
+import Slider from 'rc-slider';
+import 'rc-slider/assets/index.css';
 
 const App = () => {
   const [code, setCode] = useState("// Write your JavaScript code here...");
@@ -103,6 +105,15 @@ const App = () => {
         </button>
       </span>     
       
+      <div style={{ width: '500px', margin: '20px' }}>
+        <Slider
+          min={-1}
+          max={history.length - 1}
+          value={currentIndex}
+        />
+
+      </div>
+
       <div>
         <h2>History</h2>
         <pre>{JSON.stringify(history, null, 2)}</pre>
