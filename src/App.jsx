@@ -7,10 +7,10 @@ import 'rc-slider/assets/index.css';
 const App = () => {
   const defaultMessage = "// Write your JavaScript code here...";
   const [code, setCode] = useState(defaultMessage);
+  const [currentCode, setCurrentCode] = useState(defaultMessage);
   const [history, setHistory] = useState([]);
   const [dbInitialized, setDbInitialized] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(-1);
-  const [isEditorTouched, setIsEditorTouched] = useState(false);
 
   useEffect(() => {
     const initDB = async () => {
@@ -18,11 +18,13 @@ const App = () => {
         await dbHelper.openDB();
         const snapshots = await dbHelper.getAllSnapshots();
         setHistory(snapshots);
-        setDbInitialized(true);
         if (snapshots.length > 0) {
-          setCurrentIndex(snapshots.length - 1);
+          setCurrentIndex(-1); // Start in "Current" state
+          setCurrentIndex(snapshots.length - 1); // Load the latest snapshot
           setCode(snapshots[snapshots.length - 1].code);
+          setCurrentCode(snapshots[snapshots.length - 1].code); // Set "Current" code
         }
+        setDbInitialized(true);
       } catch (error) {
         console.error("Error initializing IndexedDB:", error);
       }
@@ -34,11 +36,29 @@ const App = () => {
   }, []);
 
   useEffect(() => {
-    if (currentIndex >= 0 && history.length > 0) {
+    if (currentIndex === -1) {
+      // "Current" state: Do not load from history
+    } else if (currentIndex >= 0 && history.length > 0) {
       setCode(history[currentIndex].code);
     }
   }, [currentIndex, history]);
 
+  const goBack = () => {
+    if (currentIndex > 0) {
+      setCurrentIndex(currentIndex - 1);
+    } else if (currentIndex === -1) {
+      setCurrentIndex(history.length - 1);
+    }
+  };
+
+  const goForward = () => {
+    if (currentIndex < history.length - 1) {
+      setCurrentIndex(currentIndex + 1);
+    } else if (currentIndex === history.length - 1) {
+      setCurrentIndex(-1); // Go to the "Current" code
+      setCode(currentCode); // Load the "Current" code
+    }
+  };
 
   const saveSnapshot = async () => {
     const snapshot = {
@@ -49,27 +69,17 @@ const App = () => {
       await dbHelper.addSnapshot(snapshot);
       const updatedSnapshots = await dbHelper.getAllSnapshots();
       setHistory(updatedSnapshots);
-      setCurrentIndex(updatedSnapshots.length - 1);
-      setCode(updatedSnapshots[updatedSnapshots.length - 1].code);
+      setCurrentIndex(-1);
     } catch (error) {
       console.error("Error saving snapshot:", error);
     }
   };
 
-  const goBack = () => {
-    if (currentIndex > 0) {
-      setCurrentIndex(currentIndex - 1);
-    }
-  };
-
-  const goForward = () => {
-    if (currentIndex < history.length - 1) {
-      setCurrentIndex(currentIndex + 1);
-    }
-  };
-
   const loadSnapshot = (newIndex) => {
-    if (newIndex >= 0 && newIndex < history.length) {
+    if (newIndex === history.length) {
+      setCurrentIndex(-1); // "Current" state
+      setCode(currentCode); // Load the "Current" code
+    } else if (newIndex >= 0 && newIndex < history.length) {
       setCurrentIndex(newIndex);
       setCode(history[newIndex].code);
     }
@@ -88,10 +98,8 @@ const App = () => {
   };
 
   const handleEditorChange = (newValue = "") => {
-    if (!isEditorTouched && newValue !== defaultMessage) {
-      setIsEditorTouched(true);
-    }
     setCode(newValue);
+    setCurrentCode(newValue);
   };
 
   return (
@@ -111,17 +119,16 @@ const App = () => {
         theme="vs-dark"
         loading={<div>Loading Editor...</div>}
       />
-      <button onClick={clearHistory}>Clear History</button>
-      <button onClick={saveSnapshot}>Save Snapshot</button>
-      <button onClick={goBack} disabled={currentIndex <= 0}>Back</button>
-      <button onClick={goForward} disabled={currentIndex >= history.length - 1}>Forward</button>
-
+      <button onClick={clearHistory} disabled={!dbInitialized}>Clear History</button>
+      <button onClick={saveSnapshot} disabled={!dbInitialized}>Save Snapshot</button>
+      <button onClick={goBack} disabled={currentIndex === 0}>Back</button>
+      <button onClick={goForward} disabled={currentIndex >= history.length || currentIndex === -1}>Forward</button>
       <span>
         <input
           id="input-value"
           type="number"
-          placeholder="-1 or 0+"
-          min="-1"
+          placeholder="0+"
+          min="0"
         />
         <button
           onClick={() => {
@@ -132,18 +139,25 @@ const App = () => {
           Load Snapshot
         </button>
       </span>
-
       <div style={{ width: '500px', margin: '20px' }}>
         <Slider
           min={0}
-          max={history.length > 0 ? history.length - 1 : 0}
-          value={currentIndex}
-          onChange={(newIndex) => loadSnapshot(newIndex)}
+          max={history.length}
+          value={currentIndex === -1 ? history.length : currentIndex}
+          onChange={(newIndex) => {
+            if (newIndex === history.length) {
+              setCurrentIndex(-1); // "Current" state
+              setCode(currentCode);
+            } else {
+              setCurrentIndex(newIndex);
+            }
+          }}
           marks={{
             ...history.reduce((acc, _, index) => {
               acc[index] = `Snapshot ${index + 1}`;
               return acc;
             }, {}),
+            [history.length]: "Current",
           }}
           step={null}
         />
