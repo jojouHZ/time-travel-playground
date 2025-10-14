@@ -11,6 +11,8 @@ const App = () => {
   const [history, setHistory] = useState([]);
   const [dbInitialized, setDbInitialized] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(-1);
+  const [isDiffViewerOpen, setIsDiffViewerOpen] = useState(false);
+  const [selectedSnapshotIndex, setSelectedSnapshotIndex] = useState(null);
 
   useEffect(() => {
     const initDB = async () => {
@@ -139,6 +141,84 @@ const App = () => {
           Load Snapshot
         </button>
       </span>
+      <button
+        onClick={() => setIsDiffViewerOpen(true)}
+        disabled={history.length < 2}
+      >
+        Diff Viewer
+      </button>
+
+      {isDiffViewerOpen && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          backgroundColor: 'rgba(0, 0, 0, 0.8)',
+          zIndex: 1000,
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}>
+          <div style={{
+            backgroundColor: 'white',
+            padding: '20px',
+            borderRadius: '5px',
+            textAlign: 'center',
+            width: '80%',
+            maxWidth: '800px',
+          }}>
+            <h2>Diff Viewer</h2>
+            <div style={{ margin: '20px 0' }}>
+              <p>Compare "Current" code with:</p>
+              <select
+                value={selectedSnapshotIndex || ""}
+                onChange={(e) => setSelectedSnapshotIndex(parseInt(e.target.value))}
+                style={{ padding: '8px', width: '100%' }}
+              >
+                <option value="">Select Snapshot</option>
+                {history.map((_, index) => (
+                  <option key={index} value={index}>
+                    Snapshot {index + 1}
+                  </option>
+                ))}
+              </select>
+            </div>
+             {selectedSnapshotIndex !== null && (
+              <div style={{ margin: '20px 0', textAlign: 'left' }}>
+                <h3>Current Code:</h3>
+                <pre style={{
+                  backgroundColor: '#f5f5f5',
+                  padding: '10px',
+                  borderRadius: '5px',
+                  maxHeight: '300px',
+                  overflow: 'auto'
+                }}>
+                  {currentCode}
+                </pre>
+                <h3>Snapshot {selectedSnapshotIndex + 1}:</h3>
+                <pre style={{
+                  backgroundColor: '#f5f5f5',
+                  padding: '10px',
+                  borderRadius: '5px',
+                  maxHeight: '300px',
+                  overflow: 'auto'
+                }}>
+                  {history[selectedSnapshotIndex].code}
+                </pre>
+              </div>
+            )}
+
+            <button
+              onClick={() => setIsDiffViewerOpen(false)}
+              style={{ marginTop: '20px', padding: '10px 20px' }}
+            >Close</button>
+          </div>
+        </div>
+      )}
+
+
       <div style={{ width: '500px', margin: '20px' }}>
         <Slider
           min={0}

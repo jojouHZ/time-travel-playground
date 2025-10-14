@@ -11,7 +11,7 @@ A **live coding playground** with **"time travel" debugging**—rewind your code
 ✅ **Time Travel Debugging**: Save snapshots of your code and rewind to any state.<br>
 ✅ **IndexedDB Storage**: All snapshots are saved locally in your browser.<br>
 ✅ **Diff Viewer**: Compare changes between code snapshots.<br>
-✅ **Matrix-Style Visualization**: Animated transitions between code states (coming soon!).<br>
+✅ **Matrix-Style Visualization**: Animated transitions between code states.<br>
 
 ---
 
@@ -19,7 +19,7 @@ A **live coding playground** with **"time travel" debugging**—rewind your code
 - **Frontend**: React, Vite, Monaco Editor
 - **State Management**: React Hooks (`useState`, `useEffect`)
 - **Storage**: IndexedDB (for persistent code history)
-- **Styling**: CSS (or your preferred styling solution)
+- **Styling**: CSS
 
 ---
 
