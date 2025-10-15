@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Editor from "@monaco-editor/react";
 import dbHelper from './utils/indexedDB';
 import Slider from 'rc-slider';
@@ -12,7 +12,10 @@ const App = () => {
   const [dbInitialized, setDbInitialized] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(-1);
   const [isDiffViewerOpen, setIsDiffViewerOpen] = useState(false);
-  const [selectedSnapshotIndex, setSelectedSnapshotIndex] = useState(null);
+  const [leftSnapshotIndex, setLeftSnapshotIndex] = useState(null);
+  const [rightSnapshotIndex, setRightSnapshotIndex] = useState(-1);
+  const leftCodeRef = useRef(null);
+  const rightCodeRef = useRef(null);
 
   useEffect(() => {
     const initDB = async () => {
@@ -104,6 +107,17 @@ const App = () => {
     setCurrentCode(newValue);
   };
 
+  const handleScroll = (e) => {
+    const leftElement = leftCodeRef.current;
+    const rightElement = rightCodeRef.current;
+
+    if (e.target === leftElement) {
+      rightElement.scrollTop = leftElement.scrollTop;
+    } else if (e.target === rightElement) {
+      leftElement.scrollTop = rightElement.scrollTop;
+    }
+  }
+
   return (
     <div>
       <h1>Time Travel Playground</h1>
@@ -142,8 +156,14 @@ const App = () => {
         </button>
       </span>
       <button
-        onClick={() => setIsDiffViewerOpen(true)}
-        disabled={history.length < 2}
+        onClick={() => {
+          setIsDiffViewerOpen(true);
+          if (history.length > 0) {
+            setLeftSnapshotIndex(history.length - 1);
+          }
+          setRightSnapshotIndex(-1);
+        }}
+        disabled={history.length < 1}
       >
         Diff Viewer
       </button>
@@ -167,48 +187,71 @@ const App = () => {
             borderRadius: '5px',
             textAlign: 'center',
             width: '80%',
-            maxWidth: '800px',
           }}>
-            <h2>Diff Viewer</h2>
-            <div style={{ margin: '20px 0' }}>
-              <p>Compare "Current" code with:</p>
-              <select
-                value={selectedSnapshotIndex || ""}
-                onChange={(e) => setSelectedSnapshotIndex(parseInt(e.target.value))}
-                style={{ padding: '8px', width: '100%' }}
-              >
-                <option value="">Select Snapshot</option>
-                {history.map((_, index) => (
-                  <option key={index} value={index}>
-                    Snapshot {index + 1}
-                  </option>
-                ))}
-              </select>
-            </div>
-             {selectedSnapshotIndex !== null && (
-              <div style={{ margin: '20px 0', textAlign: 'left' }}>
-                <h3>Current Code:</h3>
-                <pre style={{
+            <h2 style={{ textAlign: 'center', marginTop: '20px' }}>Diff Viewer</h2>
+            <div style={{ display: 'flex', justifyContent:'space-between', margin: '20px 0' }}>
+              <div style={{ width: '48%' }}>
+                <h3 style={{ marginTop: '20px' }}>Snapshot {leftSnapshotIndex !== null ? leftSnapshotIndex + 1 : ""}</h3>
+
+                <pre 
+                ref={leftCodeRef}
+                onScroll={handleScroll}
+                style={{
+                  textAlign: 'left', 
                   backgroundColor: '#f5f5f5',
                   padding: '10px',
                   borderRadius: '5px',
-                  maxHeight: '300px',
+                  maxHeight: '500px',
                   overflow: 'auto'
-                }}>
-                  {currentCode}
+                 }}>
+                  {leftSnapshotIndex !== null ? history[leftSnapshotIndex].code : ""}
                 </pre>
-                <h3>Snapshot {selectedSnapshotIndex + 1}:</h3>
-                <pre style={{
-                  backgroundColor: '#f5f5f5',
-                  padding: '10px',
-                  borderRadius: '5px',
-                  maxHeight: '300px',
-                  overflow: 'auto'
-                }}>
-                  {history[selectedSnapshotIndex].code}
-                </pre>
+                <p>Select code version:</p>
+                <select
+                  value={leftSnapshotIndex || ""}
+                  onChange={(e) => setLeftSnapshotIndex(parseInt(e.target.value))}
+                  style={{ padding: '8px', width: '40%', justifyContent: 'left'}}
+                >
+                  <option value="">Select Snapshot</option>
+                  {history.map((_, index) => (
+                    <option key={index} value={index}>
+                      Snapshot {index + 1}
+                    </option>
+                  ))}
+                </select>
               </div>
-            )}
+              <div style={{ width: '48%' }}>
+                <h3 style={{ marginTop: '20px' }}>Current code</h3>
+
+                <pre
+                ref={rightCodeRef}
+                onScroll={handleScroll}
+                style={{
+                  textAlign: 'left', 
+                  backgroundColor: '#f5f5f5',
+                  padding: '10px',
+                  borderRadius: '5px',
+                  maxHeight: '500px',
+                  overflow: 'auto'
+                 }}>
+                  {rightSnapshotIndex === -1 ? currentCode : history[rightSnapshotIndex].code}
+                </pre>
+                <p>Select code version:</p>
+                <select
+                  value={rightSnapshotIndex || ""}
+                  onChange={(e) => setRightSnapshotIndex(parseInt(e.target.value))}
+                  style={{ padding: '8px', width: '40%', justifyContent: 'left'}}
+                >
+                  <option value="-1">Select Snapshot</option>
+                  {history.map((_, index) => (
+                    <option key={index} value={index}>
+                      Snapshot {index + 1}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+             
 
             <button
               onClick={() => setIsDiffViewerOpen(false)}
