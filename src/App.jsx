@@ -3,6 +3,7 @@ import Editor from "@monaco-editor/react";
 import dbHelper from './utils/indexedDB';
 import Slider from 'rc-slider';
 import 'rc-slider/assets/index.css';
+import { diffLines } from 'diff';
 
 const App = () => {
   const defaultMessage = "// Write your JavaScript code here...";
@@ -118,6 +119,10 @@ const App = () => {
     }
   }
 
+  const getLineDiffs = (oldCode, newCode) => {
+    return diffLines(oldCode, newCode);
+  };
+
   return (
     <div>
       <h1>Time Travel Playground</h1>
@@ -189,28 +194,47 @@ const App = () => {
             width: '80%',
           }}>
             <h2 style={{ textAlign: 'center', marginTop: '20px' }}>Diff Viewer</h2>
-            <div style={{ display: 'flex', justifyContent:'space-between', margin: '20px 0' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', margin: '20px 0' }}>
               <div style={{ width: '48%' }}>
                 <h3 style={{ marginTop: '20px' }}>Snapshot {leftSnapshotIndex !== null ? leftSnapshotIndex + 1 : ""}</h3>
+                <pre
+                  ref={leftCodeRef}
+                  onScroll={handleScroll}
+                  style={{
+                    textAlign: 'left',
+                    backgroundColor: '#f5f5f5',
+                    padding: '10px',
+                    borderRadius: '5px',
+                    maxHeight: '500px',
+                    overflow: 'auto'
+                  }}
+                >
+                  {leftSnapshotIndex !== null && history[leftSnapshotIndex]?.code
+                    .split('\n')
+                    .map((line, index) => {
+                      const diffs = getLineDiffs(
+                        history[leftSnapshotIndex].code, 
+                        rightSnapshotIndex === -1 ? currentCode : history[rightSnapshotIndex].code);
+                      const isRemoved = diffs.some(diff => diff.removed && diff.value.includes(line));
 
-                <pre 
-                ref={leftCodeRef}
-                onScroll={handleScroll}
-                style={{
-                  textAlign: 'left', 
-                  backgroundColor: '#f5f5f5',
-                  padding: '10px',
-                  borderRadius: '5px',
-                  maxHeight: '500px',
-                  overflow: 'auto'
-                 }}>
-                  {leftSnapshotIndex !== null ? history[leftSnapshotIndex].code : ""}
+                      return (
+                        <div
+                          key={index}
+                          style={{
+                            color: isRemoved ? '#ff4444' : 'inherit',
+                            textDecoration: isRemoved ? 'line-through' : 'none',
+                          }}
+                      >
+                        {line}
+                      </div>
+                    );
+                  })}
                 </pre>
                 <p>Select code version:</p>
                 <select
                   value={leftSnapshotIndex || ""}
                   onChange={(e) => setLeftSnapshotIndex(parseInt(e.target.value))}
-                  style={{ padding: '8px', width: '40%', justifyContent: 'left'}}
+                  style={{ padding: '8px', width: '40%', justifyContent: 'left' }}
                 >
                   <option value="">Select Snapshot</option>
                   {history.map((_, index) => (
@@ -221,28 +245,48 @@ const App = () => {
                 </select>
               </div>
               <div style={{ width: '48%' }}>
-                <h3 style={{ marginTop: '20px' }}>Current code</h3>
-
+                <h3 style={{ marginTop: '20px' }}>Current Code</h3>
                 <pre
-                ref={rightCodeRef}
-                onScroll={handleScroll}
-                style={{
-                  textAlign: 'left', 
-                  backgroundColor: '#f5f5f5',
-                  padding: '10px',
-                  borderRadius: '5px',
-                  maxHeight: '500px',
-                  overflow: 'auto'
-                 }}>
-                  {rightSnapshotIndex === -1 ? currentCode : history[rightSnapshotIndex].code}
+                  ref={rightCodeRef}
+                  onScroll={handleScroll}
+                  style={{
+                    textAlign: 'left',
+                    backgroundColor: '#f5f5f5',
+                    padding: '10px',
+                    borderRadius: '5px',
+                    maxHeight: '500px',
+                    overflow: 'auto'
+                  }}
+                >
+                  {(rightSnapshotIndex === -1 ? currentCode : 
+                      history[rightSnapshotIndex]?.code)
+                      .split('\n')
+                      .map((line, index) => {
+                          const diffs = getLineDiffs(
+                              history[leftSnapshotIndex]?.code, 
+                              rightSnapshotIndex === -1 ? currentCode : history[rightSnapshotIndex]?.code);
+                          
+                          const isAdded = diffs.some(diff => diff.added && diff.value.includes(line));
+
+                          return (
+                              <div
+                              key={index}
+                              style={{
+                                  color: isAdded ? '#00C851' : 'inherit',
+                              }}
+                              >
+                              {line}
+                              </div>
+                          );
+                      })}
                 </pre>
                 <p>Select code version:</p>
                 <select
-                  value={rightSnapshotIndex || ""}
+                  value={rightSnapshotIndex}
                   onChange={(e) => setRightSnapshotIndex(parseInt(e.target.value))}
-                  style={{ padding: '8px', width: '40%', justifyContent: 'left'}}
+                  style={{ padding: '8px', width: '40%', justifyContent: 'left' }}
                 >
-                  <option value="-1">Select Snapshot</option>
+                  <option value="-1">Current Code</option>
                   {history.map((_, index) => (
                     <option key={index} value={index}>
                       Snapshot {index + 1}
@@ -251,12 +295,12 @@ const App = () => {
                 </select>
               </div>
             </div>
-             
-
             <button
               onClick={() => setIsDiffViewerOpen(false)}
               style={{ marginTop: '20px', padding: '10px 20px' }}
-            >Close</button>
+            >
+              Close
+            </button>
           </div>
         </div>
       )}
