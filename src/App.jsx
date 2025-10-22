@@ -5,6 +5,26 @@ import Slider from 'rc-slider';
 import 'rc-slider/assets/index.css';
 import { diffLines } from 'diff';
 
+const TypingAnimation = ({ line, onAnimationComplete }) => {
+  const [displayedText, setDisplayedText] = useState('');
+  const [index, setIndex] = useState(0);
+
+  useEffect(() => {
+    if (index < line.length) {
+      const timeoutId = setTimeout(() => {
+        setDisplayedText(prev => prev + line[index]);
+        setIndex(prev => prev + 1);
+      }, 10); // Adjust the speed of typing here (milliseconds per character)
+
+      return () => clearTimeout(timeoutId);
+    } else {
+      onAnimationComplete();
+    }
+  }, [index, line, onAnimationComplete]);
+
+  return <span>{displayedText}</span>;
+};
+
 const App = () => {
   const defaultMessage = "// Write your JavaScript code here...";
   const [code, setCode] = useState(defaultMessage);
@@ -17,6 +37,11 @@ const App = () => {
   const [rightSnapshotIndex, setRightSnapshotIndex] = useState(-1);
   const leftCodeRef = useRef(null);
   const rightCodeRef = useRef(null);
+  const [animatedLines, setAnimatedLines] = useState({});
+
+  useEffect(() => {
+    setAnimatedLines({});
+  }, [leftSnapshotIndex, rightSnapshotIndex]);
 
   useEffect(() => {
     const initDB = async () => {
@@ -25,10 +50,9 @@ const App = () => {
         const snapshots = await dbHelper.getAllSnapshots();
         setHistory(snapshots);
         if (snapshots.length > 0) {
-          setCurrentIndex(-1); // Start in "Current" state
-          setCurrentIndex(snapshots.length - 1); // Load the latest snapshot
+          setCurrentIndex(-1);
           setCode(snapshots[snapshots.length - 1].code);
-          setCurrentCode(snapshots[snapshots.length - 1].code); // Set "Current" code
+          setCurrentCode(snapshots[snapshots.length - 1].code);
         }
         setDbInitialized(true);
       } catch (error) {
@@ -43,11 +67,26 @@ const App = () => {
 
   useEffect(() => {
     if (currentIndex === -1) {
-      // "Current" state: Do not load from history
+      setCode(currentCode);
     } else if (currentIndex >= 0 && history.length > 0) {
       setCode(history[currentIndex].code);
     }
-  }, [currentIndex, history]);
+  }, [currentIndex, history, currentCode]);
+
+  const saveSnapshot = async () => {
+    const snapshot = {
+      code: currentCode,
+      timestamp: new Date().toISOString(),
+    };
+    try {
+      await dbHelper.addSnapshot(snapshot);
+      const updatedSnapshots = await dbHelper.getAllSnapshots();
+      setHistory(updatedSnapshots);
+      setCurrentIndex(-1);
+    } catch (error) {
+      console.error("Error saving snapshot:", error);
+    }
+  };
 
   const goBack = () => {
     if (currentIndex > 0) {
@@ -61,30 +100,15 @@ const App = () => {
     if (currentIndex < history.length - 1) {
       setCurrentIndex(currentIndex + 1);
     } else if (currentIndex === history.length - 1) {
-      setCurrentIndex(-1); // Go to the "Current" code
-      setCode(currentCode); // Load the "Current" code
-    }
-  };
-
-  const saveSnapshot = async () => {
-    const snapshot = {
-      code,
-      timestamp: new Date().toISOString(),
-    };
-    try {
-      await dbHelper.addSnapshot(snapshot);
-      const updatedSnapshots = await dbHelper.getAllSnapshots();
-      setHistory(updatedSnapshots);
       setCurrentIndex(-1);
-    } catch (error) {
-      console.error("Error saving snapshot:", error);
+      setCode(currentCode);
     }
   };
 
   const loadSnapshot = (newIndex) => {
     if (newIndex === history.length) {
-      setCurrentIndex(-1); // "Current" state
-      setCode(currentCode); // Load the "Current" code
+      setCurrentIndex(-1);
+      setCode(currentCode);
     } else if (newIndex >= 0 && newIndex < history.length) {
       setCurrentIndex(newIndex);
       setCode(history[newIndex].code);
@@ -111,13 +135,12 @@ const App = () => {
   const handleScroll = (e) => {
     const leftElement = leftCodeRef.current;
     const rightElement = rightCodeRef.current;
-
     if (e.target === leftElement) {
       rightElement.scrollTop = leftElement.scrollTop;
     } else if (e.target === rightElement) {
       leftElement.scrollTop = rightElement.scrollTop;
     }
-  }
+  };
 
   const getLineDiffs = (oldCode, newCode) => {
     return diffLines(oldCode, newCode);
@@ -172,7 +195,6 @@ const App = () => {
       >
         Diff Viewer
       </button>
-
       {isDiffViewerOpen && (
         <div style={{
           position: 'fixed',
@@ -213,10 +235,10 @@ const App = () => {
                     .split('\n')
                     .map((line, index) => {
                       const diffs = getLineDiffs(
-                        history[leftSnapshotIndex].code, 
-                        rightSnapshotIndex === -1 ? currentCode : history[rightSnapshotIndex].code);
+                        history[leftSnapshotIndex].code,
+                        rightSnapshotIndex === -1 ? currentCode : history[rightSnapshotIndex].code
+                      );
                       const isRemoved = diffs.some(diff => diff.removed && diff.value.includes(line));
-
                       return (
                         <div
                           key={index}
@@ -224,11 +246,11 @@ const App = () => {
                             color: isRemoved ? '#ff4444' : 'inherit',
                             textDecoration: isRemoved ? 'line-through' : 'none',
                           }}
-                      >
-                        {line}
-                      </div>
-                    );
-                  })}
+                        >
+                          {line}
+                        </div>
+                      );
+                    })}
                 </pre>
                 <p>Select code version:</p>
                 <select
@@ -258,27 +280,32 @@ const App = () => {
                     overflow: 'auto'
                   }}
                 >
-                  {(rightSnapshotIndex === -1 ? currentCode : 
-                      history[rightSnapshotIndex]?.code)
-                      .split('\n')
-                      .map((line, index) => {
-                          const diffs = getLineDiffs(
-                              history[leftSnapshotIndex]?.code, 
-                              rightSnapshotIndex === -1 ? currentCode : history[rightSnapshotIndex]?.code);
-                          
-                          const isAdded = diffs.some(diff => diff.added && diff.value.includes(line));
+                  {(rightSnapshotIndex === -1 ? currentCode : history[rightSnapshotIndex]?.code)
+                    .split('\n')
+                    .map((line, index) => {
+                      const diffs = getLineDiffs(
+                        history[leftSnapshotIndex]?.code,
+                        rightSnapshotIndex === -1 ? currentCode : history[rightSnapshotIndex]?.code
+                      );
+                      const isAdded = diffs.some(diff => diff.added && diff.value.includes(line));
+                      const lineKey = `${index}-${line}`; // Unique key for each line
 
-                          return (
-                              <div
-                              key={index}
-                              style={{
-                                  color: isAdded ? '#00C851' : 'inherit',
-                              }}
-                              >
-                              {line}
-                              </div>
-                          );
-                      })}
+                      return (
+                        <div
+                          key={lineKey}
+                          style={{
+                            color: isAdded ? '#00C851' : 'inherit',
+                          }}
+                        >
+                          {isAdded && !animatedLines[lineKey] ? (
+                            <TypingAnimation
+                              line={line}
+                              onAnimationComplete={() => setAnimatedLines(prev => ({ ...prev, [lineKey]: true }))}
+                            />
+                          ) : line}
+                        </div>
+                      );
+                    })}
                 </pre>
                 <p>Select code version:</p>
                 <select
@@ -304,8 +331,6 @@ const App = () => {
           </div>
         </div>
       )}
-
-
       <div style={{ width: '500px', margin: '20px' }}>
         <Slider
           min={0}
@@ -313,7 +338,7 @@ const App = () => {
           value={currentIndex === -1 ? history.length : currentIndex}
           onChange={(newIndex) => {
             if (newIndex === history.length) {
-              setCurrentIndex(-1); // "Current" state
+              setCurrentIndex(-1);
               setCode(currentCode);
             } else {
               setCurrentIndex(newIndex);
