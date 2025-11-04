@@ -7,19 +7,10 @@ A **live coding playground** with **"time travel" debugging**—rewind your code
 ---
 
 ## **Features**
-✅ **Live Code Editor**: Write and execute JavaScript/HTML/CSS in real-time.<br>
-✅ **Time Travel Debugging**: Save snapshots of your code and rewind to any state.<br>
-✅ **IndexedDB Storage**: All snapshots are saved locally in your browser.<br>
-✅ **Diff Viewer**: Compare changes between code snapshots.<br>
-✅ **Matrix-Style Visualization**: Animated transitions between code states.<br>
-
----
-
-## **Tech Stack**
-- **Frontend**: React, Vite, Monaco Editor
-- **State Management**: React Hooks (`useState`, `useEffect`)
-- **Storage**: IndexedDB (for persistent code history)
-- **Styling**: CSS
+- **Code Editor**: A fully functional Monaco editor for writing and editing code.
+- **Snapshot Management**: Save and load different versions of your code.
+- **Diff Viewer**: Compare different versions of your code with a clean and intuitive diff viewer.
+- **Navigation**: Easily navigate through different code snapshots using a slider.
 
 ---
 
@@ -31,62 +22,49 @@ A **live coding playground** with **"time travel" debugging**—rewind your code
    ```
 2. **Install dependencies**:
     ```bash
-    yarn install
+    npm install
     ```
 3. **Run the development server:**
     ```bash
-    yarn dev
+    npm start
     ```
-4. **Open**:
-- open http://localhost:5173 in your browser.
 
 
 ## **Usage**
 
-1. **Write Code**: Use the Monaco Editor to write JavaScript, HTML, or CSS.
-2. **Save Snapshots**: Click "Save Snapshot" to save your current code state.
-3. **Time Travel**:
-    - Use the **slider** or input field to jump to any saved snapshot.
-    - Click "Back" or **"Forward"** to navigate through history.
-
-
-4. **Compare Changes**: Use the **Diff Viewer** to see changes between snapshots.
+1. **Write Code**: Use the Monaco editor to write your code.
+2. **Save Snapshots**: Click the "Save Snapshot" button to save the current state of your code.
+3. **Navigate Snapshots**: Use the slider to navigate through different versions of your code.
+4. **Compare Changes**:  Open the diff viewer to compare different versions of your code.
 ```bash
     time-travel-playground/
-    ├── src/
-    │   ├── components/    # Reusable UI components
-    │   ├── utils/          # Utility functions (e.g., IndexedDB helper)
-    │   ├── App.jsx         # Main app component
-    │   └── main.jsx        # Entry point
-    ├── public/             # Static files
-    ├── README.md           # Project documentation
-    └── package.json        # Dependencies and scripts
+├── src/
+│   ├── components/
+│   │   ├── DiffViewer.tsx
+│   ├── utils/
+│   │   ├── indexedDB.ts
+│   ├── App.tsx
+│   ├── index.tsx
+├── package.json
+├── README.md
 ```
 
-## **Roadmap**
+## **Dependencies**
 
-- [x] Core Editor: Integrate Monaco Editor.<br>
-- [x] Snapshot System: Save and load code snapshots.<br>
-- [x] IndexedDB Storage: Persist snapshots in the browser.<br>
-- [ ] Diff Viewer: Highlight changes between snapshots.<br>
-- [ ] Matrix Visualization: Animated transitions between code states.<br>
-- [ ] Collaboration: Real-time multiplayer coding (stretch goal).<br>
-
+- React
+- Monaco Editor
+- IndexedDB
+- rc-slider
+- react-diff-view
+- TypeScript
 
 ## **Contributing**
 Contributions are welcome! Open an issue or submit a pull request.
 
 1. Fork the repository.
-2. Create a new branch: (`git checkout -b feature/your-feature`).
-3. Commit your changes (`git commit -m "feat: add your feature"`).
-4. Push to the branch (`git push origin feature/your-feature`).
-5. Open a pull request.
+2. Create a new branch for your feature or bug fix.
+3. Commit your changes.
+4. Push your branch and create a pull request.
 
 ## **License**
 This project is licensed under the MIT License.
-
-## **Acknowledgments**
-
-- Monaco Editor: Powerful code editor.
-- Vite: Fast frontend tooling.
-- IndexedDB: Browser-based database.
