@@ -18,6 +18,7 @@ const App = () => {
   const [leftSnapshotIndex, setLeftSnapshotIndex] = useState<number | null>(null);
   const [rightSnapshotIndex, setRightSnapshotIndex] = useState<number>(-1);
 
+  // this needs to be extracted into a custom hook, something like "useInitDB()"
   useEffect(() => {
     const initDB = async () => {
       try {
@@ -40,6 +41,7 @@ const App = () => {
     };
   }, []);
 
+  // next step for a future project would be to investigate what you might want to use, like redux + redux toolkin, or zustand, or some other flavour of state manager
   useEffect(() => {
     if (currentIndex === -1) {
       setCode(currentCode);
@@ -108,8 +110,10 @@ const App = () => {
   };
 
   return (
+      // please do not use divs so sparingly, use HTML5 semantic components, like <section>, etc
     <div className="app-container">
       <h1 className="app-title">Time Travel Playground</h1>
+      {/*this must be a separate component*/}
       <div className="editor-container">
         <Editor
           height="50vh"
@@ -127,6 +131,7 @@ const App = () => {
         />
       </div>
       <div className="controls-container">
+        {/* make reusable button components here */}
         <button className="control-button" onClick={clearHistory} disabled={!dbInitialized}>
           <FaTimes /> Clear History
         </button>
@@ -139,6 +144,7 @@ const App = () => {
         <button className="control-button" onClick={goForward} disabled={currentIndex >= history.length || currentIndex === -1}>
           <FaStepForward /> Forward
         </button>
+        {/* must be a separate component*/}
         <div className="snapshot-input-container">
           <input
             id="input-value"
@@ -183,6 +189,7 @@ const App = () => {
           min={0}
           max={history.length}
           value={currentIndex === -1 ? history.length : currentIndex}
+          // this needs to be handled in its own method
           onChange={(newIndex: number | number[]) => {
             if (typeof newIndex === 'number') {
               if (newIndex === history.length) {
@@ -193,6 +200,7 @@ const App = () => {
               }
             }
           }}
+          // this is really hard to read
           marks={{
             0: 'Start',
             ...history.reduce((acc, item, index) => {

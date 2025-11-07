@@ -4,6 +4,7 @@ import reactHooks from 'eslint-plugin-react-hooks'
 import reactRefresh from 'eslint-plugin-react-refresh'
 import { defineConfig, globalIgnores } from 'eslint/config'
 
+// as a future extension consider also using prettier, it will save you a lot of pain in the long run ;)
 export default defineConfig([
   globalIgnores(['dist']),
   {

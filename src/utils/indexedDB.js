@@ -1,3 +1,4 @@
+// these need to be declared in ".env" file and fetched from there during runtime
 const DB_NAME = "TimeTravelPlaygroundDB"; // Database name
 const DB_VERSION = 1; // Database version
 const STORE_NAME = "codeHistory"; // Object store's name
@@ -7,8 +8,10 @@ class IndexedDBHelper {
         this.db = null;
     }
 
-    // Open or create the database 
+    // Open or create the database
+    // use private/public methods here, depending on what needs to be exposed
     openDB() {
+        // you can try using the built in fetch() API, https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API
         return new Promise((resolve, reject) => {
             const request = indexedDB.open(DB_NAME, DB_VERSION);
             request.onupgradeneeded = (event) => {

@@ -34,6 +34,7 @@ const generateDiffText = () => {
   let inChangeBlock = false;
   let changeStartLine = 0;
 
+  // this is very hard to read stacked like this, needs to be separated into its own sub-methods
   for (let i = 0; i < Math.max(oldLines.length, newLines.length); i++) {
     if (i < oldLines.length && i < newLines.length) {
       if (oldLines[i] !== newLines[i]) {
@@ -133,12 +134,14 @@ const generateDiffText = () => {
   }, [currentChangeIndex]);
 
   return (
+      // too many divs again, refrain from using them
     <div className={styles.container}>
       <div className={styles.modal}>
         <div className={styles.headerContainer}>
           <h2 className={styles.header}>
             <FaCode /> Diff Viewer
           </h2>
+          {/* needs to be a separate component*/}
           <div className={styles.viewButtons}>
             <button className={styles.viewButton} onClick={() => setViewMode('split')}>
               <FaExchangeAlt /> Split View
@@ -161,6 +164,7 @@ const generateDiffText = () => {
             />
           ))}
         </div>
+        {/* needs to be in a separate component */}
         <div className={styles.navigationContainer}>
           <div className={styles.changeCounter}>
             Change {currentChangeIndex + 1} of {changes.length}
