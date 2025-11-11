@@ -54,7 +54,9 @@ body {
   display: flex;
   align-items: center;
   gap: 8px;
-  transition: background-color 0.3s, transform 0.2s;
+  transition:
+    background-color 0.3s,
+    transform 0.2s;
   font-weight: 500;
 }
 
@@ -95,7 +97,8 @@ body {
 }
 
 /* Contact and Project Buttons */
-.contact-button, .project-button {
+.contact-button,
+.project-button {
   padding: 12px 25px;
   background-color: transparent;
   color: #000;
@@ -107,7 +110,8 @@ body {
   margin: 0 10px;
 }
 
-.contact-button:hover, .project-button:hover {
+.contact-button:hover,
+.project-button:hover {
   background-color: #000;
   color: white;
   transform: translateY(-2px);
