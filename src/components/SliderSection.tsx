@@ -22,7 +22,7 @@ const SliderSection: React.FC<SliderSectionProps> = ({
   };
 
   return (
-    <section className="history-slider-container">
+    <section className="p-8">
       <Slider
         min={0}
         max={historyLength}

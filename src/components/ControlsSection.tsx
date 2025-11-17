@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React from 'react';
 import Button from './Button';
 import {
   FaSave,
@@ -18,6 +18,7 @@ interface ControlsSectionProps {
   dbInitialized: boolean;
   historyLength: number;
   currentIndex: number;
+  inputRef: React.RefObject<HTMLInputElement | null>;
 }
 
 const ControlsSection: React.FC<ControlsSectionProps> = ({
@@ -30,11 +31,10 @@ const ControlsSection: React.FC<ControlsSectionProps> = ({
   dbInitialized,
   historyLength,
   currentIndex,
+  inputRef,
 }) => {
-  const inputRef = useRef<HTMLInputElement>(null);
-
   return (
-    <section className="controls-container">
+    <section>
       <Button
         onClick={onClearHistory}
         disabled={historyLength === 0}
@@ -63,7 +63,7 @@ const ControlsSection: React.FC<ControlsSectionProps> = ({
       >
         <FaStepForward /> Forward
       </Button>
-      <div className="snapshot-input-container">
+      <div>
         <input
           ref={inputRef}
           id="input-value"

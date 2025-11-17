@@ -17,19 +17,59 @@ A **live coding playground** with **"time travel" debugging**—rewind your code
 
 ## **Installation**
 
-1. **Clone the repository**:
+#### **Prerequisites**
+
+- Ensure you have Node.js installed (preferably the latest LTS version).
+- Ensure you have Yarn installed.
+
+1. **Clone the repository**
+
    ```bash
    git clone git@github.com\:jojouHZ/time-travel-playground.git
    cd time-travel-playground
    ```
+
 2. **Install dependencies**:
    ```bash
-   npm install
+   yarn install
    ```
-3. **Run the development server:**
+3. **Set Up Environment Variables:**
+   - Create a .env file in the root directory of your project and add the following environment variables:
+
    ```bash
-   npm start
+   touch .env
    ```
+
+   - Open the .env file and add the following content:
+
+   ```
+      # App Name
+      VITE_APP_TITLE=Time Travel Playground
+
+      # Base API URL
+      VITE_API_BASE_URL=https://api.example.com
+
+      # Debug Mode
+      VITE_DEBUG_MODE=true
+
+      # DB Name
+      VITE_APP_DB_NAME=TimeTravelPlaygroundDB
+
+      # DB Version
+      VITE_APP_DB_VERSION=1
+
+      # DB Store Name
+      VITE_APP_STORE_NAME=codeHistory
+
+   ```
+
+4. **Run the Project:**
+
+   ```
+   yarn dev
+   ```
+
+   - This will start the application, and you can view it in your browser at http://localhost:5173 (or another port if specified).
 
 ## **Usage**
 
@@ -39,28 +79,38 @@ A **live coding playground** with **"time travel" debugging**—rewind your code
 4. **Compare Changes**: Open the diff viewer to compare different versions of your code.
 
 ```bash
-    time-travel-playground/
-├── src/
-│   ├── components/        # Reusable UI components
-│   ├── context/           # React context providers
-│   ├── tests/             # Test files
-│   ├── utils/             # Utility functions
-│   ├── App.tsx            # Main application component
-│   └── ...                # Other source files
-├── public/                # Public assets
-├── package.json           # Project configuration
-└── README.md              # Project documentation
+      your-project-directory/
+      ├── src/
+      │   ├── components/       # Reusable components
+      │   ├── pages/            # Page components
+      │   ├── App.tsx           # Main application component
+      │   ├── main.tsx          # Entry point
+      │   └── index.css         # Global styles
+      ├── public/               # Static files
+      ├── .env                  # Environment variables
+      ├── tailwind.config.js    # Tailwind CSS configuration
+      ├── postcss.config.cjs    # PostCSS configuration
+      ├── vite.config.ts        # Vite configuration
+      ├── package.json          # Project dependencies and scripts
+      └── README.md             # Project documentation
 ```
+
+## **Troubleshooting**
+
+- If you encounter any issues during installation or running the project, ensure all dependencies are correctly installed and there are no errors in the console.
+- If you see warnings or errors related to environment variables, ensure the .env file is correctly configured and placed in the root directory.
 
 ## **Dependencies**
 
+- TypeScript
 - React
+- Vite
+- TailwindCSS
 - Monaco Editor
 - IndexedDB
 - rc-slider
 - react-diff-view
-- TypeScript
-- Vite
+- Prettier
 - Jest & React Testing Library
 
 ## **Contributing**

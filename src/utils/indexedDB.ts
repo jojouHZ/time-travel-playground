@@ -1,7 +1,6 @@
-const DB_NAME: string = import.meta.env.VITE_APP_DB_NAME;
-const DB_VERSION: number = parseInt(import.meta.env.VITE_APP_DB_VERSION);
-const STORE_NAME: string = import.meta.env.VITE_APP_STORE_NAME;
+import { getEnv } from '../utils/env';
 
+const { DB_NAME, DB_VERSION, STORE_NAME } = getEnv();
 let db: IDBDatabase | null = null;
 
 const openDB = (): Promise<void> => {

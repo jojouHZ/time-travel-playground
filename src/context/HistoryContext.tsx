@@ -1,6 +1,6 @@
 // src/context/HistoryContext.tsx
 import React, { createContext, useState, useContext, ReactNode } from 'react';
-import { Snapshot } from '../types/Snapshot';
+import { Snapshot } from '../types';
 
 interface HistoryContextType {
   history: Snapshot[];

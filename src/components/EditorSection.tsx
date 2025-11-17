@@ -8,7 +8,7 @@ interface EditorSectionProps {
 
 const EditorSection: React.FC<EditorSectionProps> = ({ code, onChange }) => {
   return (
-    <section className="editor-container">
+    <section>
       <Editor
         height="50vh"
         language="javascript"
