@@ -4,29 +4,28 @@ import 'rc-slider/assets/index.css';
 
 interface SliderSectionProps {
   historyLength: number;
-  currentIndex: number;
+  value: number;
   onChange: (newIndex: number | number[]) => void;
 }
 
 const SliderSection: React.FC<SliderSectionProps> = ({
   historyLength,
-  currentIndex,
+  value,
   onChange,
 }) => {
   const marks = {
-    0: 'Start',
-    ...Array.from({ length: historyLength - 1 }, (_, index) => ({
-      [index + 1]: (index + 1).toString(),
+    ...Array.from({ length: historyLength }, (_, index) => ({
+      [index]: (index + 1).toString(),
     })).reduce((acc, item) => ({ ...acc, ...item }), {}),
     [historyLength]: 'Current',
   };
 
   return (
-    <section className="p-8">
+    <section className="w-4/5 md:w-2/5 pb-8">
       <Slider
         min={0}
         max={historyLength}
-        value={currentIndex === -1 ? historyLength : currentIndex}
+        value={value}
         onChange={onChange}
         marks={marks}
         step={null}

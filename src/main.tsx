@@ -1,17 +1,14 @@
 import React from 'react';
-import App from './App';
-import { HistoryProvider } from './context/HistoryContext';
+import App from './app/App';
 import ErrorBoundary from './components/ErrorBoundary';
-import './index.css';
 import { createRoot } from 'react-dom/client';
+import './index.css';
 
 const rootEl = document.getElementById('root')!;
 createRoot(rootEl).render(
   <React.StrictMode>
-    <HistoryProvider>
-      <ErrorBoundary>
-        <App />
-      </ErrorBoundary>
-    </HistoryProvider>
+    <ErrorBoundary>
+      <App />
+    </ErrorBoundary>
   </React.StrictMode>
 );

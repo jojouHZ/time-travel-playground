@@ -1,4 +1,3 @@
-// src/context/HistoryContext.tsx
 import React, { createContext, useState, useContext, ReactNode } from 'react';
 import { Snapshot } from '../types';
 
@@ -32,6 +31,7 @@ export const HistoryProvider: React.FC<{ children: ReactNode }> = ({
   };
 
   const goBack = () => {
+    console.log('goBack pressed');
     if (currentIndex > 0) {
       setCurrentIndex(currentIndex - 1);
     } else if (currentIndex === -1 && history.length > 0) {
@@ -40,6 +40,7 @@ export const HistoryProvider: React.FC<{ children: ReactNode }> = ({
   };
 
   const goForward = () => {
+    console.log('goForward pressed');
     if (currentIndex < history.length - 1) {
       setCurrentIndex(currentIndex + 1);
     } else if (currentIndex === history.length - 1) {
@@ -51,6 +52,8 @@ export const HistoryProvider: React.FC<{ children: ReactNode }> = ({
     if (index >= 0 && index < history.length) {
       setCurrentIndex(index);
     } else if (index === history.length) {
+      setCurrentIndex(-1);
+    } else if (index === -1) {
       setCurrentIndex(-1);
     }
   };

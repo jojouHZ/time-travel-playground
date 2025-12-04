@@ -1,1 +1,17 @@
-@import 'tailwindcss';
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.react-diff-viewer,
+.react-diff-viewer * {
+  column-count: initial !important;
+  column-width: auto !important;
+  columns: auto !important;
+}
+
+.react-diff-viewer pre,
+.react-diff-viewer code {
+  white-space: pre !important;
+  word-wrap: normal !important;
+  overflow-x: auto !important;
+}

@@ -12,17 +12,21 @@
     "test": "jest"
   },
   "dependencies": {
+    "@headlessui/react": "^2.2.9",
+    "@heroicons/react": "^2.2.0",
     "@monaco-editor/react": "^4.7.0",
-    "@vitejs/plugin-react-swc": "^4.2.2",
+    "@tailwindplus/elements": "^1.0.19",
     "diff": "^8.0.2",
     "monaco-editor": "^0.53.0",
-    "postcss-import": "^16.1.1",
-    "postcss-preset-env": "^10.4.0",
+    "prism-react-renderer": "^2.4.1",
     "rc-slider": "^11.1.9",
     "react": "^19.2.0",
+    "react-bootstrap": "^2.10.10",
     "react-diff-view": "^3.3.2",
     "react-dom": "^19.2.0",
-    "react-icons": "^5.5.0"
+    "react-icons": "^5.5.0",
+    "react-syntax-highlighter": "^16.1.0",
+    "tailwind-elements": "^0.2.0"
   },
   "devDependencies": {
     "@babel/core": "^7.28.5",
@@ -30,19 +34,18 @@
     "@babel/preset-react": "^7.28.5",
     "@babel/preset-typescript": "^7.28.5",
     "@eslint/js": "^9.36.0",
-    "@tailwindcss/postcss": "^4.1.17",
-    "@tailwindcss/vite": "^4.1.17",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.0",
     "@types/jest": "^30.0.0",
     "@types/react": "^19.2.2",
     "@types/react-dom": "^19.2.2",
+    "@types/react-syntax-highlighter": "^15.5.13",
     "@types/rollup": "^0.54.0",
     "@typescript-eslint/eslint-plugin": "^8.46.3",
     "@typescript-eslint/parser": "^8.46.3",
     "@vitejs/plugin-react": "4.0.4",
-    "@vitejs/plugin-react-refresh": "^1.3.6",
-    "autoprefixer": "^10.4.22",
+    "alpinejs": "^3.15.2",
+    "autoprefixer": "^10.4.0",
     "babel-jest": "^25.0.0",
     "eslint": "^9.36.0",
     "eslint-plugin-react": "^7.37.5",
@@ -52,27 +55,27 @@
     "identity-obj-proxy": "^3.0.0",
     "jest": "^25.0.0",
     "jest-environment-jsdom": "^30.2.0",
-    "postcss": "^8.5.6",
+    "postcss": "^8.4.0",
     "prettier": "^3.6.2",
-    "tailwindcss": "^4.1.17",
+    "tailwindcss": "^3.4.0",
     "vite": "^7.2.2",
     "vite-plugin-environment": "^1.1.3"
   },
   "resolutions": {
     "vite": "npm:rolldown-vite@7.1.14",
-    "**/rollup": "^4.0.0",
-    "**/@rollup/pluginutils": "^5.0.0"
+    "/rollup": "^4.0.0",
+    "/@rollup/pluginutils": "^5.0.0"
   },
   "jest": {
     "testEnvironment": "jsdom",
     "setupFilesAfterEnv": [
       "<rootDir>/src/tests/setupTests.ts"
     ],
-    "moduleNameMapper": {
-      "\\.(css|less|scss|sass)$": "identity-obj-proxy"
+    "moduleNameMapping": {
+      ".(css|less|scss|sass)$": "identity-obj-proxy"
     },
     "transform": {
-      "^.+\\.(ts|tsx)$": "babel-jest"
+      "^.+.(ts|tsx)$": "babel-jest"
     }
   },
   "main": "index.js",
